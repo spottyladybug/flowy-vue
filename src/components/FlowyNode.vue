@@ -1,14 +1,13 @@
 <template lang="html">
   <div class="flowy-node ">
     <draggable
+      v-mode="array"
       class="flowy-draggable"
       group="flowy"
-      @stop="onStop(node, $event)"
-      @start="onStart(node, $event)"
-      :with-handle="false"
-      :draggable-mirror="{ xAxis: false, appendTo: 'body' }"
-      :data="{ draggingNode: node }"
+      @stop="onStop"
+      @start="onStart"
     >
+      <div v-for="element in array" :key="0">
       <!-- the node itself -->
       <flowy-block
         :data="node"
@@ -38,6 +37,8 @@
 
         <dropzone
           :data="{ dropzoneNode: node }"
+          :start="startEvent"
+          :stop="stopEvent"
           @enter="onEnterDrag({ to: node })"
           @leave="onLeaveDrag($event)"
           @drop="onDrop($event)"
@@ -52,6 +53,7 @@
           </template>
         </dropzone>
       </flowy-block>
+      </div>
     </draggable>
 
     <!-- children tree -->
@@ -83,6 +85,8 @@ import cloneDeep from "lodash/cloneDeep";
 
 import ConnectorLine from "./ConnectorLine";
 import DropIndicator from "./DropIndicator";
+import Dropzone from "./Dropzoner";
+import draggable from 'vuedraggable'
 
 function getOffset(el) {
   const rect = el.getBoundingClientRect();
@@ -97,6 +101,8 @@ export default {
   components: {
     ConnectorLine,
     DropIndicator,
+    draggable,
+    Dropzone,
   },
 
   props: {
@@ -148,6 +154,8 @@ export default {
       width: 0,
       dropAllowed: true,
       timer: null,
+      startEvent: null,
+      stopEvent: null,
     };
   },
 
@@ -252,6 +260,9 @@ export default {
     lengthFromMiddle() {
       return Math.abs(this.xPos - this.parentX);
     },
+    array() {
+      return [this.node];
+    }
   },
 
   methods: {
@@ -287,11 +298,19 @@ export default {
       };
     },
 
-    onStart(node) {
-      this.$emit("drag-start", { node });
+    onStart(event) {
+      this.startEvent = {
+        index: this.startEvent ? this.startEvent.index : 0,
+        event: event,
+      }
+      this.$emit("drag-start", { params: { node: this.node }});
     },
 
     onStop(node, _event) {
+      this.stopEvent = {
+        index: this.stopEvent ? this.stopEvent.index : 0,
+        event: _event,
+      }
       this.$emit("drag-stop");
       this.hoveringWithDrag = false;
     },
