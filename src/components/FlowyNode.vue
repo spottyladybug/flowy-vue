@@ -1,13 +1,13 @@
 <template lang="html">
   <div class="flowy-node ">
     <draggable
-      v-mode="array"
+      :list="[node]"
       class="flowy-draggable"
       group="flowy"
-      @stop="onStop"
+      @end="onStop"
       @start="onStart"
     >
-      <div v-for="element in array" :key="0">
+      <div :key="0">
       <!-- the node itself -->
       <flowy-block
         :data="node"
@@ -37,12 +37,10 @@
 
         <dropzone
           :data="{ dropzoneNode: node }"
-          :start="startEvent"
-          :stop="stopEvent"
-          @enter="onEnterDrag({ to: node })"
-          @leave="onLeaveDrag($event)"
-          @drop="onDrop($event)"
-          @receive="onDragReceive({ ...$event, to: node })"
+          @enter="onEnterDrag"
+          @leave="onLeaveDrag"
+          @drop="onDrop"
+          @receive="onDragReceive"
           group="first_group"
           class="node-dropzone"
         >
@@ -85,7 +83,7 @@ import cloneDeep from "lodash/cloneDeep";
 
 import ConnectorLine from "./ConnectorLine";
 import DropIndicator from "./DropIndicator";
-import Dropzone from "./Dropzoner";
+import Dropzone from "./Dropzone";
 import draggable from 'vuedraggable'
 
 function getOffset(el) {
@@ -154,8 +152,6 @@ export default {
       width: 0,
       dropAllowed: true,
       timer: null,
-      startEvent: null,
-      stopEvent: null,
     };
   },
 
@@ -260,9 +256,6 @@ export default {
     lengthFromMiddle() {
       return Math.abs(this.xPos - this.parentX);
     },
-    array() {
-      return [this.node];
-    }
   },
 
   methods: {
@@ -290,8 +283,7 @@ export default {
       return get(event, "newComponent.$attrs.data.dropzoneNode", false);
     },
 
-    blockFromNewNodeEvent(event) {
-      const data = get(event, "oldComponent.$attrs.data", false);
+    blockFromNewNodeEvent(data) {
       return {
         nodeComponent: data.componentName,
         data: cloneDeep(data.props),
@@ -299,18 +291,20 @@ export default {
     },
 
     onStart(event) {
-      this.startEvent = {
-        index: this.startEvent ? this.startEvent.index : 0,
-        event: event,
-      }
+      const customEvent = new CustomEvent('flowy-node-drag-start', {
+        detail: {
+          node: this.node,
+        }});
+      document.dispatchEvent(customEvent);
       this.$emit("drag-start", { params: { node: this.node }});
     },
 
-    onStop(node, _event) {
-      this.stopEvent = {
-        index: this.stopEvent ? this.stopEvent.index : 0,
-        event: _event,
-      }
+    onStop(_event) {
+      const customEvent = new CustomEvent('flowy-node-drag-stop', {
+        detail: {
+          node: this.node,
+      }});
+      document.dispatchEvent(customEvent);
       this.$emit("drag-stop");
       this.hoveringWithDrag = false;
     },
@@ -321,28 +315,32 @@ export default {
     },
 
     onDragReceive(_event) {
+      console.log('onDragReceive', _event)
       this.hoveringWithDrag = false;
 
-      const draggingNode = this.draggingNodeFromEvent(_event);
-      const toNode = _event.to;
+      const event = {
+        from: _event.detail.node,
+        to: this.node,
+      };
+      const toNode = event.to;
 
       // Insert node
 
       // Move node
 
-      const isNew = (draggingNode === false)
+      const isNew = (_event.detail.node.id)
 
 
 
-      if (draggingNode === false) {
+      if (isNew) {
         // not dragging from existing node (so dragged from new node list)
-        const newNode = this.blockFromNewNodeEvent(_event);
+        const newNode = this.blockFromNewNodeEvent(_event.detail.node);
         this.newNode(newNode, this.node);
       } else {
         // dragged from existing node
         const dropAllowed = this.beforeMove(toNode);
         if (dropAllowed) {
-          this.moveNode(draggingNode, toNode);
+          this.moveNode(_event.detail.node, toNode);
         }
       }
       this.dropAllowed = true;
@@ -350,7 +348,7 @@ export default {
 
     onEnterDrag(_event) {
       this.hoveringWithDrag = true;
-      this.dropAllowed = this.beforeMove(_event.to);
+      this.dropAllowed = this.beforeMove(this.node);
       // this.$emit('enter-drop', {
       //   to: _event.to,
       // });

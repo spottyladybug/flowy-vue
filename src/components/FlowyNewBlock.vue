@@ -1,12 +1,12 @@
 <template lang="html">
   <div class="flowy-block mr-24px relative">
     <draggable
-      v-model="array"
+      :list="[nodeData]"
       group="flowy"
       @start="onStart"
-      @stop="onStop"
+      @end="onStop"
     >
-      <div v-for="element in array" :key="0">
+      <div :key="0">
         <slot name="preview"></slot>
       </div>
     </draggable>
@@ -47,16 +47,23 @@ export default {
     nodeData() {
       return this.node;
     },
-    array() {
-      return [this.node];
-    }
   },
   methods: {
     onStart(event, data) {
+      const customEvent = new CustomEvent('flowy-node-drag-start', {
+        detail: {
+          node: this.node,
+        }});
+      document.dispatchEvent(customEvent);
       this.$emit('drag-start', { params: { node: this.node }});
     },
-    onStop(event, data) {
-      this.$emit('drag-stop', data);
+    onStop(event) {
+      const customEvent = new CustomEvent('flowy-node-drag-stop', {
+        detail: {
+          node: this.node,
+        }});
+      document.dispatchEvent(customEvent);
+      this.$emit('drag-stop', { params: { node: this.node }});
     },
   },
 };

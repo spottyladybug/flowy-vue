@@ -9,7 +9,7 @@
     "build:all": "npm run build:lib && npm run build:lib && npm run build:gh-pages",
     "build:demo": "vue-cli-service build --dest dist/demo",
     "build:gh-pages": "vue-cli-service build --dest docs",
-    "build:lib": "vue-cli-service build --target lib --dest dist/lib --name flowy-vue 'src/index.js' && npm run build:copy-api-files",
+    "build:lib": "vue-cli-service build --target lib --dest dist/lib --name flowy-vue src/index.js && npm run build:copy-api-files",
     "build:copy-api-files": "copyfiles -f src/components/*.json dist/lib",
     "lint": "npx eslint --ext .js,.vue src *.js",
     "release": "bash scripts/release.sh"
