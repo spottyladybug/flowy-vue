@@ -1,7 +1,7 @@
 <template lang="html">
   <div class="flowy-block mr-24px relative">
     <draggable
-      :list="[nodeData]"
+      :value="[nodeData]"
       :move="onMove"
       group="flowy"
       @start="onStart"

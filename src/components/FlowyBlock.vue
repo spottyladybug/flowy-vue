@@ -2,7 +2,7 @@
   <div class="flowy-block mr-24px relative">
     <slot></slot>
     <draggable
-      :list="[node]"
+      :value="[node]"
       class="flowy-draggable"
       :id="node.id"
       group="flowy"
