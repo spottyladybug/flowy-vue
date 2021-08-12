@@ -232,4 +232,7 @@ a {
 .flowy-block.draggable-mirror {
   opacity: 0.6;
 }
+.flowy-draggable .sortable-chosen {
+  display: none;
+}
 </style>

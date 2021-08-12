@@ -62,7 +62,6 @@ export default {
   methods: {
     onDragEnd(_event) {
       this.$emit('end', _event);
-
     },
     onDragStart(_event) {
       this.$emit('start', _event);

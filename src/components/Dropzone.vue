@@ -20,7 +20,6 @@ export default {
   },
   methods: {
     onDragStart(_event) {
-      console.log('start-event', _event)
       if (_event.detail.event.to.id === `${this.node.id}`) {
         this.active = true;
       }
@@ -29,7 +28,6 @@ export default {
       console.log('move-event', _event)
     },
     onDragStop(_event) {
-      console.log('stop-event', _event)
       if (_event.detail.event.to.id === _event.detail.event.from.id) {
         return;
       }
