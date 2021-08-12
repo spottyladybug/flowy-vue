@@ -7,11 +7,14 @@
       :id="node.id"
       group="flowy"
       :move="onDragMove"
+      @dragover.native="onDragover"
+      @dragleave.native="onDragleave"
       @change="onChange"
       @end="onDragEnd"
       @start="onDragStart"
     >
       <div :key="0">
+        <DropIndicator :show='showIndicator' :not-allowed='!dropAllowed' />
         <component
           :is="component"
           v-bind="{ ...$props, ...$attrs, ...passedProps }"
@@ -68,10 +71,17 @@ export default {
     },
   },
   methods: {
+    onDragleave(_event) {
+      this.showIndicator = false;
+    },
+    onDragover(_event) {
+      this.showIndicator = true;
+    },
     onChange(_event) {
       if (!_event.added) {
         return;
       }
+      this.showIndicator = false;
       this.$emit('add', _event.added.element);
     },
     onDragMove(_event) {
