@@ -6,6 +6,7 @@
         class="draggable"
         :remove="removeNode"
         v-bind="{ ...$props, ...passedProps }"
+        @move="onMove"
         @end="onStop"
         @start="onStart"
       >
@@ -277,6 +278,16 @@ export default {
         nodeComponent: data.componentName,
         data: cloneDeep(data.props),
       };
+    },
+
+    onMove(event) {
+      const customEvent = new CustomEvent('flowy-node-drag-move', {
+        detail: {
+          event: event,
+          node: this.node,
+        }});
+      document.dispatchEvent(customEvent);
+      this.$emit("drag-move", { params: { node: this.node }});
     },
 
     onStart(event) {

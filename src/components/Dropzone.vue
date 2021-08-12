@@ -25,7 +25,17 @@ export default {
       }
     },
     onDragMove(_event) {
-      console.log('move-event', _event)
+      if (_event.detail.event.to.id === `${this.node.id}`) {
+        if (this.over === false) {
+          this.$emit('enter');
+        }
+        this.over = true;
+      } else {
+        if (this.over === true) {
+          this.$emit('leave');
+        }
+        this.over = false;
+      }
     },
     onDragStop(_event) {
       if (_event.detail.event.to.id === _event.detail.event.from.id) {
@@ -35,6 +45,10 @@ export default {
         return;
       }
       this.active = false;
+      if (!this.over) {
+        return;
+      }
+      this.over = false;
       this.$emit('receive', _event);
     }
   },

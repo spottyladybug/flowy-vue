@@ -6,6 +6,7 @@
       class="flowy-draggable"
       :id="node.id"
       group="flowy"
+      :move="onDragMove"
       @end="onDragEnd"
       @start="onDragStart"
     >
@@ -60,6 +61,9 @@ export default {
     },
   },
   methods: {
+    onDragMove(_event) {
+      this.$emit('move', _event);
+    },
     onDragEnd(_event) {
       this.$emit('end', _event);
     },

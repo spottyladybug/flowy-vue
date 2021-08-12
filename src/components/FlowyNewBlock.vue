@@ -2,6 +2,7 @@
   <div class="flowy-block mr-24px relative">
     <draggable
       :list="[nodeData]"
+      :move="onMove"
       group="flowy"
       @start="onStart"
       @end="onStop"
@@ -49,6 +50,15 @@ export default {
     },
   },
   methods: {
+    onMove(event) {
+      const customEvent = new CustomEvent('flowy-node-drag-move', {
+        detail: {
+          event,
+          node: this.node,
+        }});
+      document.dispatchEvent(customEvent);
+      this.$emit('drag-move', { params: { node: this.node }});
+    },
     onStart(event, data) {
       const customEvent = new CustomEvent('flowy-node-drag-start', {
         detail: {
