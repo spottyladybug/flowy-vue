@@ -1,20 +1,13 @@
 <template lang="html">
   <div class="flowy-node ">
-    <draggable
-      :list="[node]"
-      class="flowy-draggable"
-      :id="node.id"
-      group="flowy"
-      @end="onStop"
-      @start="onStart"
-    >
-      <div :key="0">
       <!-- the node itself -->
       <flowy-block
         :data="node"
         class="draggable"
         :remove="removeNode"
         v-bind="{ ...$props, ...passedProps }"
+        @end="onStop"
+        @start="onStart"
       >
         <div class='dimensionBox' style="" ref="block" />
 
@@ -51,8 +44,6 @@
           </template>
         </dropzone>
       </flowy-block>
-      </div>
-    </draggable>
 
     <!-- children tree -->
     <div class="flowy-tree flex flex-row flex-no-wrap overflow-visible mt-64px">
@@ -84,7 +75,6 @@ import cloneDeep from "lodash/cloneDeep";
 import ConnectorLine from "./ConnectorLine";
 import DropIndicator from "./DropIndicator";
 import Dropzone from "./Dropzone";
-import draggable from 'vuedraggable'
 
 function getOffset(el) {
   const rect = el.getBoundingClientRect();
@@ -99,7 +89,6 @@ export default {
   components: {
     ConnectorLine,
     DropIndicator,
-    draggable,
     Dropzone,
   },
 

@@ -30,6 +30,9 @@ export default {
     },
     onDragStop(_event) {
       console.log('stop-event', _event)
+      if (_event.detail.event.to.id === _event.detail.event.from.id) {
+        return;
+      }
       if (_event.detail.event.to.id !== `${this.node.id}`) {
         return;
       }
