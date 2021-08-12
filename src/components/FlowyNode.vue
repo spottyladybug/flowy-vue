@@ -5,7 +5,9 @@
         :data="node"
         class="draggable"
         :remove="removeNode"
+        :dropAllowed="dropAllowed"
         v-bind="{ ...$props, ...passedProps }"
+        @add="onAdd"
         @move="onMove"
         @end="onStop"
         @start="onStart"
@@ -27,23 +29,6 @@
           :styling='lineMargins'
           :path='linePathDown'
         />
-
-        <DropIndicator :show='showIndicator' :not-allowed='!dropAllowed' />
-
-        <dropzone
-          :node="node"
-          @enter="onEnterDrag"
-          @leave="onLeaveDrag"
-          @drop="onDrop"
-          @receive="onDragReceive"
-          class="node-dropzone"
-        >
-          <template #default="scope">
-            <div :class="scope" class="node-dropzone">
-              <div class=""></div>
-            </div>
-          </template>
-        </dropzone>
       </flowy-block>
 
     <!-- children tree -->
@@ -74,8 +59,6 @@ import get from "lodash/get";
 import cloneDeep from "lodash/cloneDeep";
 
 import ConnectorLine from "./ConnectorLine";
-import DropIndicator from "./DropIndicator";
-import Dropzone from "./Dropzone";
 
 function getOffset(el) {
   const rect = el.getBoundingClientRect();
@@ -89,8 +72,6 @@ export default {
 
   components: {
     ConnectorLine,
-    DropIndicator,
-    Dropzone,
   },
 
   props: {
@@ -136,7 +117,6 @@ export default {
 
   data() {
     return {
-      hoveringWithDrag: false,
       mounted: false, // we need to be mounted before $refs is popuplated
       xPosProxy: 0,
       width: 0,
@@ -170,10 +150,6 @@ export default {
 
     hasChildren() {
       return this.children.length > 0;
-    },
-
-    showIndicator() {
-      return this.hoveringWithDrag;
     },
 
     lineMargins() {
@@ -281,47 +257,24 @@ export default {
     },
 
     onMove(event) {
-      const customEvent = new CustomEvent('flowy-node-drag-move', {
-        detail: {
-          event: event,
-          node: this.node,
-        }});
-      document.dispatchEvent(customEvent);
       this.$emit("drag-move", { params: { node: this.node }});
     },
 
     onStart(event) {
-      const customEvent = new CustomEvent('flowy-node-drag-start', {
-        detail: {
-          event: event,
-          node: this.node,
-        }});
-      document.dispatchEvent(customEvent);
       this.$emit("drag-start", { params: { node: this.node }});
     },
 
     onStop(_event) {
-      const customEvent = new CustomEvent('flowy-node-drag-stop', {
-        detail: {
-          event: _event,
-          node: this.node,
-      }});
-      document.dispatchEvent(customEvent);
       this.$emit("drag-stop");
-      this.hoveringWithDrag = false;
     },
 
     onDrop(_event) {
       this.$emit("drag-stop");
-      this.hoveringWithDrag = false;
     },
 
-    onDragReceive(_event) {
-      console.log('onDragReceive', _event)
-      this.hoveringWithDrag = false;
-
+    onAdd(node) {
       const event = {
-        from: _event.detail.node,
+        from: node,
         to: this.node,
       };
       const toNode = event.to;
@@ -330,13 +283,10 @@ export default {
 
       // Move node
 
-      const isNew = !_event.detail.node.parentId
-
-
-
+      const isNew = !node.parentId
       if (isNew) {
         // not dragging from existing node (so dragged from new node list)
-        const newNode = this.blockFromNewNodeEvent(_event.detail.node);
+        const newNode = this.blockFromNewNodeEvent(node);
         this.newNode(newNode, this.node);
       } else {
         // dragged from existing node
@@ -349,15 +299,10 @@ export default {
     },
 
     onEnterDrag(_event) {
-      this.hoveringWithDrag = true;
       this.dropAllowed = this.beforeMove(this.node);
       // this.$emit('enter-drop', {
       //   to: _event.to,
       // });
-    },
-
-    onLeaveDrag(_event) {
-      this.hoveringWithDrag = false;
     },
 
     newNode(newNode, parentNode) {

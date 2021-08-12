@@ -51,30 +51,12 @@ export default {
   },
   methods: {
     onMove(event) {
-      const customEvent = new CustomEvent('flowy-node-drag-move', {
-        detail: {
-          event,
-          node: this.node,
-        }});
-      document.dispatchEvent(customEvent);
       this.$emit('drag-move', { params: { node: this.node }});
     },
     onStart(event, data) {
-      const customEvent = new CustomEvent('flowy-node-drag-start', {
-        detail: {
-          event,
-          node: this.node,
-        }});
-      document.dispatchEvent(customEvent);
       this.$emit('drag-start', { params: { node: this.node }});
     },
     onStop(event) {
-      const customEvent = new CustomEvent('flowy-node-drag-stop', {
-        detail: {
-          event,
-          node: this.node,
-        }});
-      document.dispatchEvent(customEvent);
       this.$emit('drag-stop', { params: { node: this.node }});
     },
   },

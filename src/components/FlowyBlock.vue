@@ -7,6 +7,7 @@
       :id="node.id"
       group="flowy"
       :move="onDragMove"
+      @change="onChange"
       @end="onDragEnd"
       @start="onDragStart"
     >
@@ -23,14 +24,20 @@
 
 <script>
 /* eslint-disable no-unused-vars */
-
 import draggable from 'vuedraggable'
+import DropIndicator from "./DropIndicator";
 
 export default {
   components: {
     draggable,
+    DropIndicator,
   },
   props: {
+    dropAllowed: {
+      type: Boolean,
+      required: false,
+      default: true,
+    },
     node: {
       type: Object,
       required: true,
@@ -42,7 +49,7 @@ export default {
   },
   data() {
     return {
-
+      showIndicator: false,
     };
   },
   mounted() {
@@ -61,6 +68,12 @@ export default {
     },
   },
   methods: {
+    onChange(_event) {
+      if (!_event.added) {
+        return;
+      }
+      this.$emit('add', _event.added.element);
+    },
     onDragMove(_event) {
       this.$emit('move', _event);
     },
