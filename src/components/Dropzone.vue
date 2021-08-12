@@ -1,7 +1,7 @@
 <script>
 /* eslint-disable no-underscore-dangle */
 export default {
-  props: ['data', 'group'],
+  props: ['node'],
   data() {
     return {
       over: false,
@@ -21,13 +21,18 @@ export default {
   methods: {
     onDragStart(_event) {
       console.log('start-event', _event)
-      this.active = true;
+      if (_event.detail.event.to.id === `${this.node.id}`) {
+        this.active = true;
+      }
     },
     onDragMove(_event) {
       console.log('move-event', _event)
     },
     onDragStop(_event) {
       console.log('stop-event', _event)
+      if (_event.detail.event.to.id !== `${this.node.id}`) {
+        return;
+      }
       this.active = false;
       this.$emit('receive', _event);
     }

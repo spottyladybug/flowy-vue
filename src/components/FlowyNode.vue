@@ -3,6 +3,7 @@
     <draggable
       :list="[node]"
       class="flowy-draggable"
+      :id="node.id"
       group="flowy"
       @end="onStop"
       @start="onStart"
@@ -36,12 +37,11 @@
         <DropIndicator :show='showIndicator' :not-allowed='!dropAllowed' />
 
         <dropzone
-          :data="{ dropzoneNode: node }"
+          :node="node"
           @enter="onEnterDrag"
           @leave="onLeaveDrag"
           @drop="onDrop"
           @receive="onDragReceive"
-          group="first_group"
           class="node-dropzone"
         >
           <template #default="scope">
@@ -293,6 +293,7 @@ export default {
     onStart(event) {
       const customEvent = new CustomEvent('flowy-node-drag-start', {
         detail: {
+          event: event,
           node: this.node,
         }});
       document.dispatchEvent(customEvent);
@@ -302,6 +303,7 @@ export default {
     onStop(_event) {
       const customEvent = new CustomEvent('flowy-node-drag-stop', {
         detail: {
+          event: _event,
           node: this.node,
       }});
       document.dispatchEvent(customEvent);
@@ -328,7 +330,7 @@ export default {
 
       // Move node
 
-      const isNew = (_event.detail.node.id)
+      const isNew = !_event.detail.node.parentId
 
 
 
@@ -340,7 +342,7 @@ export default {
         // dragged from existing node
         const dropAllowed = this.beforeMove(toNode);
         if (dropAllowed) {
-          this.moveNode(_event.detail.node, toNode);
+          this.moveNode(event.from, event.to);
         }
       }
       this.dropAllowed = true;

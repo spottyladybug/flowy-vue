@@ -52,6 +52,7 @@ export default {
     onStart(event, data) {
       const customEvent = new CustomEvent('flowy-node-drag-start', {
         detail: {
+          event,
           node: this.node,
         }});
       document.dispatchEvent(customEvent);
@@ -60,6 +61,7 @@ export default {
     onStop(event) {
       const customEvent = new CustomEvent('flowy-node-drag-stop', {
         detail: {
+          event,
           node: this.node,
         }});
       document.dispatchEvent(customEvent);
