@@ -100,3 +100,8 @@ export default {
   },
 };
 </script>
+<style>
+.flowy-draggable .sortable-ghost {
+  display: none;
+}
+</style>
