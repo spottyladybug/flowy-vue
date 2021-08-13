@@ -3,7 +3,7 @@
     <draggable
       :value="[nodeData]"
       :move="onMove"
-      group="flowy"
+      :group="{ name: 'flowy', pull: 'clone', put: false }"
       @start="onStart"
       @end="onStop"
     >
