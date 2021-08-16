@@ -1,22 +1,27 @@
 <template lang="html">
   <div class="flowy-block mr-24px relative">
     <draggable
-        :with-handle="false"
-        :draggable-mirror="{ xAxis: false, appendTo: 'body' }"
-        group="flowy"
-        @start="onStart(nodeData)"
-        @stop="onStop(nodeData)"
-        :data="{ type: 'new', ...nodeData }"
-      >
-      <slot name="preview"></slot>
+      :value="[nodeData]"
+      :move="onMove"
+      :group="{ name: 'flowy', pull: 'clone', put: false }"
+      @start="onStart"
+      @end="onStop"
+    >
+      <div :key="0">
+        <slot name="preview"></slot>
+      </div>
     </draggable>
   </div>
 </template>
 
 <script>
 /* eslint-disable no-unused-vars */
+import draggable from 'vuedraggable'
 
 export default {
+  components: {
+    draggable,
+  },
   props: {
 
   },
@@ -45,11 +50,14 @@ export default {
     },
   },
   methods: {
-    onStart(data) {
-      this.$emit('drag-start', data);
+    onMove(event) {
+      this.$emit('drag-move', { params: { node: this.node }});
     },
-    onStop(data) {
-      this.$emit('drag-stop', data);
+    onStart(event, data) {
+      this.$emit('drag-start', { params: { node: this.node }});
+    },
+    onStop(event) {
+      this.$emit('drag-stop', { params: { node: this.node }});
     },
   },
 };

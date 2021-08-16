@@ -1,6 +1,6 @@
 {
-  "name": "@hipsjs/flowy-vue",
-  "version": "1.0.13",
+  "name": "flowy-vue-bic",
+  "version": "1.0.0",
   "description": "Shopify draggable for Vue",
   "main": "./dist/lib/flowy-vue.common.js",
   "private": false,
@@ -9,10 +9,13 @@
     "build:all": "npm run build:lib && npm run build:lib && npm run build:gh-pages",
     "build:demo": "vue-cli-service build --dest dist/demo",
     "build:gh-pages": "vue-cli-service build --dest docs",
-    "build:lib": "vue-cli-service build --target lib --dest dist/lib --name flowy-vue 'src/index.js' && npm run build:copy-api-files",
+    "build:lib": "vue-cli-service build --target lib --dest dist/lib --name flowy-vue src/index.js && npm run build:copy-api-files",
     "build:copy-api-files": "copyfiles -f src/components/*.json dist/lib",
     "lint": "npx eslint --ext .js,.vue src *.js",
     "release": "bash scripts/release.sh"
+  },
+  "publishConfig": {
+    "registry": "http://192.168.1.92:8081/repository/npm-private"
   },
   "repository": {
     "type": "git",
@@ -27,10 +30,10 @@
     "url": "https://github.com/remcoplasmeyer/flowy-vue/issues"
   },
   "peerDependencies": {
-    "vue": "~2"
+    "vue": "~2",
+    "vuedraggable": "2.24.3"
   },
   "dependencies": {
-    "@hipsjs/shopify-draggable-vue": "^1.0.7",
     "lodash": "^4.17.15"
   },
   "devDependencies": {
