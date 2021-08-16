@@ -28,7 +28,7 @@
 <script>
 /* eslint-disable no-unused-vars */
 import draggable from 'vuedraggable'
-import DropIndicator from "./DropIndicator";
+import DropIndicator from './DropIndicator';
 
 export default {
   components: {

@@ -333,4 +333,7 @@ export default {
   width: 100%;
   height: 100%;
 }
+.flowy-node {
+  margin: 0 auto;
+}
 </style>
